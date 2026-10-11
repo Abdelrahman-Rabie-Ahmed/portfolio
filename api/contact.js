@@ -38,9 +38,8 @@ module.exports = async (req, res) => {
         text: `From: ${name} <${email}>\nSubject: ${subject}\n\n${message}`
       })
     });
-    if (!r.ok) { console.error('Resend returned status', r.status); return res.status(502).json({ ok: false, error: 'Could not send your message. Please email me directly.' }); }
-    return res.status(200).json({ ok: true });
-  } catch {
+    if (!r.ok) { const t = await r.text().catch(() => ''); console.error('Resend error', r.status, t.slice(0, 300)); return res.status(502).json({ ok: false, error: 'Could not send your message. Please email me directly.' }); }
+    catch {
     console.error('Send failed'); // message contents are never logged
     return res.status(502).json({ ok: false, error: 'Could not send your message. Please email me directly.' });
   }
